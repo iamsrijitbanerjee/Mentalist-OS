@@ -1,4 +1,4 @@
-# The Mentalist OS. CBI Casefile Edition
+# The Mentalist OS: CBI Casefile Edition
 
 I am very excited to share my web operating system project with you. Most of the time when you open a browser it looks very modern and sleek with colors.. I wanted to create something that feels warm and personal. The Mentalist is one of my television shows. So I designed this operating system to look like a desk at the Sacramento CBI detective station.
 Everything in this system is designed to look like case files and notes. Of regular windows I made everything look like manila folders and corkboards where you can pin up notes and pictures.
