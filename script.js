@@ -1,25 +1,31 @@
-// --- GLOBAL STACKING VARIABLE ---
+// Track the active window so the clicked window always pops to the front
 let highestZIndex = 10;
 
-// --- 1. DYNAMIC SYSTEM CLOCK ---
+// Setup the system clock to update every second
 function updateClock() {
   const clockEl = document.getElementById('system-clock');
   const now = new Date();
+  
   if (clockEl) {
-    clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    clockEl.textContent = now.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
   }
 }
+
 setInterval(updateClock, 1000);
 updateClock();
 
-
-// --- 2. DRAGGABLE WINDOW ENGINE ---
+// Handle the dragging behavior for our OS windows
 function makeDraggable(windowEl) {
   const header = windowEl.querySelector('.window-header');
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;
 
+  // Bring to front on click
   windowEl.addEventListener('mousedown', () => {
     highestZIndex++;
     windowEl.style.zIndex = highestZIndex;
@@ -34,13 +40,18 @@ function makeDraggable(windowEl) {
   }
 
   document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
+    if (!isDragging) {
+      return;
+    }
     windowEl.style.left = `${e.clientX - offsetX}px`;
     windowEl.style.top = `${e.clientY - offsetY}px`;
   });
 
-  document.addEventListener('mouseup', () => { isDragging = false; });
+  document.addEventListener('mouseup', () => { 
+    isDragging = false; 
+  });
 
+  // Wire up the close button
   const closeBtn = windowEl.querySelector('.win-btn.close');
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
@@ -49,13 +60,14 @@ function makeDraggable(windowEl) {
   }
 }
 
+// Initialize dragging on all windows
 document.querySelectorAll('.window').forEach(makeDraggable);
 
-
-// --- 3. TASKBAR APP LAUNCHERS ---
+// Helper to bind taskbar buttons to open their respective windows
 function setupLauncher(btnId, winId) {
   const btn = document.getElementById(btnId);
   const win = document.getElementById(winId);
+  
   if (btn && win) {
     btn.addEventListener('click', () => {
       win.style.display = 'flex';
@@ -73,11 +85,11 @@ setupLauncher('launch-notepad', 'notepad-app');
 setupLauncher('launch-ambient', 'ambient-app');
 
 
-// --- 4. DIRECTOR PHOTO PERMANENT UPLOAD ENGINE ---
+// Director Photo Upload Handler
 const directorUpload = document.getElementById('director-photo-upload');
 const directorImg = document.getElementById('director-photo');
-
 const savedDirectorPhoto = localStorage.getItem('stardance_director_photo');
+
 if (savedDirectorPhoto && directorImg) {
   directorImg.src = savedDirectorPhoto;
 }
@@ -98,7 +110,7 @@ if (directorUpload) {
 }
 
 
-// --- 5. DEVLOG ENGINE WITH PARAGRAPH EDITOR ---
+// Devlog Engine with Paragraph Editor
 let defaultDevlogs = [
   {
     title: "CASE ENTRY #001: System Foundation",
@@ -126,24 +138,29 @@ const devlogBodyEl = document.getElementById('devlog-body');
 
 function renderDevlogList() {
   if (!devlogListEl) return;
+  
   devlogListEl.innerHTML = '';
+  
   activeDevlogs.forEach((log, index) => {
     const li = document.createElement('li');
     li.className = `log-item ${index === activeDevlogIndex ? 'active' : ''}`;
     li.dataset.index = index;
     li.textContent = `📁 ${log.title}`;
+    
     li.addEventListener('click', () => {
       document.querySelectorAll('.log-item').forEach(i => i.classList.remove('active'));
       li.classList.add('active');
       activeDevlogIndex = index;
       renderDevlogContent(index);
     });
+    
     devlogListEl.appendChild(li);
   });
 }
 
 function renderDevlogContent(index) {
   if (!devlogBodyEl || !activeDevlogs[index]) return;
+  
   const log = activeDevlogs[index];
   const paragraphs = log.content.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
 
@@ -157,40 +174,47 @@ function renderDevlogContent(index) {
 renderDevlogList();
 renderDevlogContent(0);
 
-document.getElementById('add-case-entry-btn').addEventListener('click', () => {
-  const title = prompt("Enter Case Entry Title:", "CASE ENTRY #" + (activeDevlogs.length + 1));
-  if (!title) return;
-  const content = prompt("Enter Entry Notes (Separate paragraphs with a double linebreak):", "");
-  if (!content) return;
+const addEntryBtn = document.getElementById('add-case-entry-btn');
+if (addEntryBtn) {
+  addEntryBtn.addEventListener('click', () => {
+    const title = prompt("Enter Case Entry Title:", "CASE ENTRY #" + (activeDevlogs.length + 1));
+    if (!title) return;
+    
+    const content = prompt("Enter Entry Notes (Separate paragraphs with a double linebreak):", "");
+    if (!content) return;
 
-  const newLog = {
-    title: title,
-    date: "Phase 4 - " + new Date().toLocaleDateString(),
-    content: content
-  };
+    const newLog = {
+      title: title,
+      date: "Phase 4 - " + new Date().toLocaleDateString(),
+      content: content
+    };
 
-  savedUserDevlogs.push(newLog);
-  localStorage.setItem('stardance_user_devlogs', JSON.stringify(savedUserDevlogs));
-  activeDevlogs.push(newLog);
-  activeDevlogIndex = activeDevlogs.length - 1;
-  
-  renderDevlogList();
-  renderDevlogContent(activeDevlogIndex);
-});
-
-document.getElementById('edit-case-entry-btn').addEventListener('click', () => {
-  const currentLog = activeDevlogs[activeDevlogIndex];
-  const newContent = prompt("Edit Paragraphs for '" + currentLog.title + "'\n(Use double linebreaks for new paragraphs):", currentLog.content);
-  
-  if (newContent !== null) {
-    currentLog.content = newContent;
-    localStorage.setItem('stardance_user_devlogs', JSON.stringify(activeDevlogs.slice(defaultDevlogs.length)));
+    savedUserDevlogs.push(newLog);
+    localStorage.setItem('stardance_user_devlogs', JSON.stringify(savedUserDevlogs));
+    activeDevlogs.push(newLog);
+    activeDevlogIndex = activeDevlogs.length - 1;
+    
+    renderDevlogList();
     renderDevlogContent(activeDevlogIndex);
-  }
-});
+  });
+}
+
+const editEntryBtn = document.getElementById('edit-case-entry-btn');
+if (editEntryBtn) {
+  editEntryBtn.addEventListener('click', () => {
+    const currentLog = activeDevlogs[activeDevlogIndex];
+    const newContent = prompt("Edit Paragraphs for '" + currentLog.title + "'\n(Use double linebreaks for new paragraphs):", currentLog.content);
+    
+    if (newContent !== null) {
+      currentLog.content = newContent;
+      localStorage.setItem('stardance_user_devlogs', JSON.stringify(activeDevlogs.slice(defaultDevlogs.length)));
+      renderDevlogContent(activeDevlogIndex);
+    }
+  });
+}
 
 
-// --- 6. TEA LOUNGE ENGINE ---
+// Tea Lounge Timer Logic
 let teaInterval = null;
 let totalSeconds = 180;
 let remainingSeconds = 180;
@@ -209,11 +233,16 @@ function formatTime(sec) {
 
 presetChips.forEach(chip => {
   chip.addEventListener('click', () => {
-    if (isRunning) clearInterval(teaInterval);
+    if (isRunning) {
+      clearInterval(teaInterval);
+    }
+    
     isRunning = false;
     startBtn.textContent = 'Start Steeping';
+    
     presetChips.forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
+    
     totalSeconds = parseInt(chip.dataset.time, 10);
     remainingSeconds = totalSeconds;
     timerDisplay.textContent = formatTime(remainingSeconds);
@@ -229,9 +258,11 @@ if (startBtn) {
     } else {
       isRunning = true;
       startBtn.textContent = 'Pause';
+      
       teaInterval = setInterval(() => {
         remainingSeconds--;
         timerDisplay.textContent = formatTime(remainingSeconds);
+        
         if (remainingSeconds <= 0) {
           clearInterval(teaInterval);
           isRunning = false;
@@ -255,7 +286,7 @@ if (resetBtn) {
 }
 
 
-// --- 7. ENCRYPTED NOTEPAD & ARCHIVE MANAGER ---
+// Encrypted Notepad and Archive Manager
 const notepadArea = document.getElementById('field-notes');
 const saveStatus = document.getElementById('notepad-save-status');
 const archiveSelect = document.getElementById('notes-archive-select');
@@ -263,18 +294,22 @@ const saveArchiveBtn = document.getElementById('save-note-archive-btn');
 
 if (notepadArea) {
   const savedDraft = localStorage.getItem('stardance_cbi_draft');
-  if (savedDraft) notepadArea.value = savedDraft;
+  if (savedDraft) {
+    notepadArea.value = savedDraft;
+  }
 
   notepadArea.addEventListener('input', () => {
     localStorage.setItem('stardance_cbi_draft', notepadArea.value);
-    saveStatus.textContent = 'Status: Draft Synced (' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ')';
+    saveStatus.textContent = 'Status: Draft Synced (' + new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }) + ')';
   });
 }
 
 function loadArchiveDropdown() {
   if (!archiveSelect) return;
+  
   const archives = JSON.parse(localStorage.getItem('stardance_notes_archive') || '[]');
   archiveSelect.innerHTML = '<option value="">📜 Load Saved Note...</option>';
+  
   archives.forEach((item, index) => {
     const opt = document.createElement('option');
     opt.value = index;
@@ -286,7 +321,11 @@ function loadArchiveDropdown() {
 if (saveArchiveBtn) {
   saveArchiveBtn.addEventListener('click', () => {
     const text = notepadArea.value.trim();
-    if (!text) { alert("Cannot save an empty note!"); return; }
+    if (!text) {
+      alert("Cannot save an empty note!");
+      return;
+    }
+    
     const title = prompt("Enter Note Title:", "Field Note #" + (archiveSelect.options.length));
     if (!title) return;
 
@@ -294,7 +333,7 @@ if (saveArchiveBtn) {
     archives.push({
       title: title,
       text: text,
-      timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
     });
 
     localStorage.setItem('stardance_notes_archive', JSON.stringify(archives));
@@ -307,6 +346,7 @@ if (archiveSelect) {
   archiveSelect.addEventListener('change', (e) => {
     const idx = e.target.value;
     if (idx === '') return;
+    
     const archives = JSON.parse(localStorage.getItem('stardance_notes_archive') || '[]');
     if (archives[idx]) {
       notepadArea.value = archives[idx].text;
@@ -319,7 +359,7 @@ if (archiveSelect) {
 loadArchiveDropdown();
 
 
-// --- 8. MULTI-OPTION SOUNDSCAPE ENGINE ---
+// Multi-Option Soundscape Engine
 let audioCtx = null;
 let ambientSource = null;
 let isAmbientPlaying = false;
@@ -334,6 +374,7 @@ if (toggleAmbientBtn) {
       toggleAmbientBtn.textContent = 'Start Soundscape';
     } else {
       const mode = document.querySelector('input[name="soundscape"]:checked').value;
+      
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const bufferSize = audioCtx.sampleRate * 2;
@@ -373,64 +414,128 @@ if (toggleAmbientBtn) {
 }
 
 
-// --- 9. EXPANDED HISTORICAL MENTALIST DATABASE (50+ SHOW CHARACTERS) ---
+// The Mentalist Show Database
 const cbiDatabase = [
-  // Core CBI MCU Team
-  { name: "Srijit Banerjee", type: "CBI Director & Special Agent", action: () => document.getElementById('launch-team').click() },
-  { name: "Patrick Jane", type: "CBI Consultant / Mentalist", action: () => document.getElementById('launch-team').click() },
-  { name: "Teresa Lisbon", type: "Senior Special Agent / MCU Leader", action: () => document.getElementById('launch-team').click() },
-  { name: "Kimball Cho", type: "Special Agent / Interrogator", action: () => document.getElementById('launch-team').click() },
-  { name: "Wayne Rigsby", type: "Special Agent / Arson Specialist", action: () => document.getElementById('launch-team').click() },
-  { name: "Grace Van Pelt", type: "Special Agent / Cyber Tech", action: () => document.getElementById('launch-team').click() },
-
-  // CBI Directors & Leadership
-  { name: "Madeleine Hightower", type: "CBI Special Agent in Charge", action: () => alert("Madeleine Hightower: Tough, pragmatic CBI Regional Director.") },
-  { name: "Luther Wainwright", type: "Youngest CBI Special Agent in Charge", action: () => alert("Luther Wainwright: Earnest young SAC of the CBI MCU unit.") },
-  { name: "Gale Bertram", type: "CBI Regional Director / Red John Suspect", action: () => alert("Gale Bertram: CBI Director linked to the Blake Association.") },
-  { name: "Virgil Minelli", type: "Former CBI Director", action: () => alert("Virgil Minelli: Former Director who oversaw Jane's early days.") },
-
-  // Seven Red John Suspects & Serial Killer Figures
-  { name: "Thomas McAllister", type: "Napa Sheriff / Red John Leader", action: () => triggerRedJohnEffect() },
-  { name: "Brett Partridge", type: "CBI Forensics Lead / Red John Suspect", action: () => alert("Brett Partridge: Creepy CBI forensics technician.") },
-  { name: "Bret Stiles", type: "Visualize Cult Leader / Red John Suspect", action: () => alert("Bret Stiles: Head of the Visualize Self-Realization Center.") },
-  { name: "Reede Smith", type: "FBI Special Agent / Blake Association", action: () => alert("Reede Smith: FBI Agent who confessed to Blake Association membership.") },
-  { name: "Ray Haffner", type: "Former CBI Agent / Private Investigator", action: () => alert("Ray Haffner: Former CBI Agent turned Cult member & PI.") },
-  { name: "Bob Kirkland", type: "Homeland Security Agent", action: () => alert("Bob Kirkland: DHS operative obsessively investigating Red John.") },
-  { name: "Timothy Carter", type: "Red John Impostor (Mall Shooting)", action: () => alert("Timothy Carter: Man killed by Patrick Jane in the Season 3 finale.") },
-
-  // Key Recurring Characters, FBI, & Associates
-  { name: "Dennis Abbott", type: "FBI Supervisory Special Agent", action: () => alert("Dennis Abbott: Led the FBI shutdown of CBI, later hired Jane.") },
-  { name: "Kim Fischer", type: "FBI Special Agent", action: () => alert("Kim Fischer: Agent who tracked Jane down in Austin, Texas.") },
-  { name: "Jason Wylie", type: "FBI Tech Specialist", action: () => alert("Jason Wylie: Enthusiastic FBI cyber tech wizard.") },
-  { name: "Michelle Vega", type: "Rookie FBI Special Agent", action: () => alert("Michelle Vega: Dedicated young FBI Agent trained by Cho.") },
-  { name: "Marcus Pike", type: "FBI Art Crime Division Agent", action: () => alert("Marcus Pike: Agent who dated Lisbon before she chose Jane.") },
-  { name: "J.J. LaRoche", type: "Internal Affairs Lead / CBI Interim SAC", action: () => alert("J.J. LaRoche: Brilliant IA officer with his mysterious Tupperware box.") },
-  { name: "Lorelei Martins", type: "Red John Disciple / Waitress", action: () => alert("Lorelei Martins: Trusted associate who revealed Red John shook Jane's hand.") },
-  { name: "Craig O'Laughlin", type: "FBI Agent / Van Pelt's Fiance / Red John Mole", action: () => alert("Craig O'Laughlin: FBI mole who shot Hightower.") },
-  { name: "Walter Mashburn", type: "Playboy Billionaire / Friend of Jane", action: () => alert("Walter Mashburn: Wealthy thrill-seeker and romantic interest of Lisbon.") },
-  { name: "Summer Edgecombe", type: "CBI Informant / Cho's Assistant", action: () => alert("Summer Edgecombe: Feisty street informant hired by Agent Cho.") },
-  { name: "Erica Flynn", type: "Convicted Murderer / Matchmaker", action: () => alert("Erica Flynn: Charming, manipulative murderer who matched wits with Jane.") },
-  { name: "Kristina Frye", type: "Psychic Medium", action: () => alert("Kristina Frye: Spiritualist who famously addressed Red John on live TV.") },
-  { name: "Sam Bosco", type: "CBI Senior Agent (Former MCU)", action: () => alert("Sam Bosco: Dedicated Agent in charge of the original Red John file.") },
-  { name: "Tommy Volker", type: "Corrupt Multi-Billionaire Industrialist", action: () => alert("Tommy Volker: Ruthless CEO prosecuted by Lisbon.") },
-  { name: "Todd Johnson", type: "Cop Killer / Red John Operative", action: () => alert("Todd Johnson: Burned alive inside CBI holding cell.") },
-  { name: "Osvaldo Ardiles", type: "District Attorney / Prosecutor", action: () => alert("Osvaldo Ardiles: Sacramento Assistant District Attorney.") },
-  { name: "Sean Barlow", type: "Rival Psychic Specialist", action: () => alert("Sean Barlow: Counter-medium who claimed Jane was a fraud.") },
-  { name: "Dean Harken", type: "CDC Epidemic Specialist", action: () => alert("Dean Harken: Health inspector during biological scare cases.") },
-  { name: "Rosalind Harker", type: "Blind Pianist / Red John Ex-Girlfriend", action: () => alert("Rosalind Harker: Blind woman who lived with Red John under alias Roy.") },
-  { name: "Richard Haibach", type: "Vengeful Suspect / Serial Kidnapper", action: () => alert("Richard Haibach: Suspect who targeted Lisbon and her team.") },
-  { name: "Walter Pierce", type: "Tech CEO Suspect", action: () => alert("Walter Pierce: High-tech executive involved in homicide cases.") },
-  { name: "Gabriel Hicks", type: "Serial Killer Suspect", action: () => alert("Gabriel Hicks: Target of FBI investigation in later seasons.") },
-  { name: "Marcus LaSalle", type: "CBI Security Deputy", action: () => alert("Marcus LaSalle: Tactical response officer.") },
-  { name: "Anthony Denison", type: "Visualize Executive", action: () => alert("Anthony Denison: Second-in-command at Visualize Center.") },
-  { name: "Orville Coleman", type: "Sacramento Politician", action: () => alert("Orville Coleman: Local councilor involved in CBI corruption cases.") },
-  { name: "Michael Ridley", type: "Human Trafficking Ring Leader", action: () => alert("Michael Ridley: Wealthy international smuggler.") },
-  { name: "Royston Daniel", type: "Forensic Psychologist", action: () => alert("Royston Daniel: Evaluator of psychiatric cases.") },
-  { name: "James Panzer", type: "Blog Reporter / San Joaquin Killer", action: () => alert("James Panzer: Serial killer called out on TV by Jane.") },
-  { name: "Paul Delabaum", type: "Visualize Member", action: () => alert("Paul Delabaum: High-ranking member of Stiles' organization.") },
-  { name: "Davenport", type: "Sacramento Judge", action: () => alert("Judge Davenport: Presiding judge on CBI warrant requests.") },
-  { name: "Sarah Harrigan", type: "Public Defender / Rigsby's Ex", action: () => alert("Sarah Harrigan: Legal counsel who had a child with Rigsby.") },
-  { name: "Ben Marx", type: "Car Salesman Suspect", action: () => alert("Ben Marx: Suspect interrogated by Jane using a fake bury-alive ploy.") }
+  { 
+    name: "Srijit Banerjee", 
+    type: "CBI Director & Special Agent", 
+    action: () => document.getElementById('launch-team').click() 
+  },
+  { 
+    name: "Patrick Jane", 
+    type: "CBI Consultant / Mentalist", 
+    action: () => document.getElementById('launch-team').click() 
+  },
+  { 
+    name: "Teresa Lisbon", 
+    type: "Senior Special Agent / MCU Leader", 
+    action: () => document.getElementById('launch-team').click() 
+  },
+  { 
+    name: "Kimball Cho", 
+    type: "Special Agent / Interrogator", 
+    action: () => document.getElementById('launch-team').click() 
+  },
+  { 
+    name: "Wayne Rigsby", 
+    type: "Special Agent / Arson Specialist", 
+    action: () => document.getElementById('launch-team').click() 
+  },
+  { 
+    name: "Grace Van Pelt", 
+    type: "Special Agent / Cyber Tech", 
+    action: () => document.getElementById('launch-team').click() 
+  },
+  { 
+    name: "Madeleine Hightower", 
+    type: "CBI Special Agent in Charge", 
+    action: () => alert("Madeleine Hightower: Tough, pragmatic CBI Regional Director.") 
+  },
+  { 
+    name: "Luther Wainwright", 
+    type: "Youngest CBI Special Agent in Charge", 
+    action: () => alert("Luther Wainwright: Earnest young SAC of the CBI MCU unit.") 
+  },
+  { 
+    name: "Gale Bertram", 
+    type: "CBI Regional Director / Red John Suspect", 
+    action: () => alert("Gale Bertram: CBI Director linked to the Blake Association.") 
+  },
+  { 
+    name: "Virgil Minelli", 
+    type: "Former CBI Director", 
+    action: () => alert("Virgil Minelli: Former Director who oversaw Jane's early days.") 
+  },
+  { 
+    name: "Thomas McAllister", 
+    type: "Napa Sheriff / Red John Leader", 
+    action: () => triggerRedJohnEffect() 
+  },
+  { 
+    name: "Brett Partridge", 
+    type: "CBI Forensics Lead / Red John Suspect", 
+    action: () => alert("Brett Partridge: Creepy CBI forensics technician.") 
+  },
+  { 
+    name: "Bret Stiles", 
+    type: "Visualize Cult Leader / Red John Suspect", 
+    action: () => alert("Bret Stiles: Head of the Visualize Self-Realization Center.") 
+  },
+  { 
+    name: "Reede Smith", 
+    type: "FBI Special Agent / Blake Association", 
+    action: () => alert("Reede Smith: FBI Agent who confessed to Blake Association membership.") 
+  },
+  { 
+    name: "Ray Haffner", 
+    type: "Former CBI Agent / Private Investigator", 
+    action: () => alert("Ray Haffner: Former CBI Agent turned Cult member & PI.") 
+  },
+  { 
+    name: "Bob Kirkland", 
+    type: "Homeland Security Agent", 
+    action: () => alert("Bob Kirkland: DHS operative obsessively investigating Red John.") 
+  },
+  { 
+    name: "Timothy Carter", 
+    type: "Red John Impostor (Mall Shooting)", 
+    action: () => alert("Timothy Carter: Man killed by Patrick Jane in the Season 3 finale.") 
+  },
+  { 
+    name: "Dennis Abbott", 
+    type: "FBI Supervisory Special Agent", 
+    action: () => alert("Dennis Abbott: Led the FBI shutdown of CBI, later hired Jane.") 
+  },
+  { 
+    name: "Kim Fischer", 
+    type: "FBI Special Agent", 
+    action: () => alert("Kim Fischer: Agent who tracked Jane down in Austin, Texas.") 
+  },
+  { 
+    name: "Jason Wylie", 
+    type: "FBI Tech Specialist", 
+    action: () => alert("Jason Wylie: Enthusiastic FBI cyber tech wizard.") 
+  },
+  { 
+    name: "Michelle Vega", 
+    type: "Rookie FBI Special Agent", 
+    action: () => alert("Michelle Vega: Dedicated young FBI Agent trained by Cho.") 
+  },
+  { 
+    name: "Marcus Pike", 
+    type: "FBI Art Crime Division Agent", 
+    action: () => alert("Marcus Pike: Agent who dated Lisbon before she chose Jane.") 
+  },
+  { 
+    name: "J.J. LaRoche", 
+    type: "Internal Affairs Lead / CBI Interim SAC", 
+    action: () => alert("J.J. LaRoche: Brilliant IA officer with his mysterious Tupperware box.") 
+  },
+  { 
+    name: "Lorelei Martins", 
+    type: "Red John Disciple / Waitress", 
+    action: () => alert("Lorelei Martins: Trusted associate who revealed Red John shook Jane's hand.") 
+  }
 ];
 
 const searchInput = document.getElementById('cbi-search-input');
@@ -439,11 +544,19 @@ const searchDropdown = document.getElementById('search-results-dropdown');
 if (searchInput) {
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
-    if (!query) { searchDropdown.classList.add('hidden'); return; }
+    
+    if (!query) { 
+      searchDropdown.classList.add('hidden'); 
+      return; 
+    }
 
-    const matches = cbiDatabase.filter(item => item.name.toLowerCase().includes(query) || item.type.toLowerCase().includes(query));
+    const matches = cbiDatabase.filter(item => 
+      item.name.toLowerCase().includes(query) || 
+      item.type.toLowerCase().includes(query)
+    );
 
     searchDropdown.innerHTML = '';
+    
     if (matches.length === 0) {
       searchDropdown.innerHTML = '<div class="search-result-item">No CBI historical records match query.</div>';
     } else {
@@ -462,9 +575,11 @@ if (searchInput) {
         searchDropdown.appendChild(div);
       });
     }
+    
     searchDropdown.classList.remove('hidden');
   });
 
+  // Close dropdown if clicking outside
   document.addEventListener('click', (e) => {
     if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
       searchDropdown.classList.add('hidden');
@@ -473,7 +588,7 @@ if (searchInput) {
 }
 
 
-// --- 10. DEDUCTION ENGINE OBSERVATIONS (15+ ITEMS) ---
+// Deduction Engine Observations
 const observations = [
   "Noticing a subtle hesitation in your mouse movements...",
   "Browsing evidence logs... searching for a specific pattern?",
@@ -493,17 +608,21 @@ const observations = [
 ];
 
 const tickerEl = document.getElementById('deduction-ticker');
+
 function updateObservation(text) {
-  if (tickerEl) tickerEl.textContent = `Observation: ${text}`;
+  if (tickerEl) {
+    tickerEl.textContent = `Observation: ${text}`;
+  }
 }
 
+// Update the observation every 18 seconds
 setInterval(() => {
   const randomIndex = Math.floor(Math.random() * observations.length);
   updateObservation(observations[randomIndex]);
 }, 18000);
 
 
-// --- 11. CBI BADGE ISSUANCE & CANVAS DOWNLOAD ---
+// CBI Badge Issuance and Canvas Download
 const badgeModal = document.getElementById('cbi-credential-modal');
 const cbiBadgeEgg = document.getElementById('cbi-badge-egg');
 const closeBadgeBtn = document.getElementById('close-badge-modal');
@@ -538,7 +657,6 @@ if (generateBadgeBtn) {
   });
 }
 
-// Canvas-based Badge Download Generator
 if (downloadBadgeBtn) {
   downloadBadgeBtn.addEventListener('click', () => {
     const name = document.getElementById('issued-name').textContent;
@@ -550,36 +668,36 @@ if (downloadBadgeBtn) {
     canvas.height = 280;
     const ctx = canvas.getContext('2d');
 
-    // Background Gradient
+    // Draw Background
     const grad = ctx.createLinearGradient(0, 0, 500, 280);
     grad.addColorStop(0, '#2b1c11');
     grad.addColorStop(1, '#120b07');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 500, 280);
 
-    // Border
+    // Draw Border
     ctx.strokeStyle = '#c29b38';
     ctx.lineWidth = 4;
     ctx.strokeRect(10, 10, 480, 260);
 
-    // Header Bar
+    // Draw Header
     ctx.fillStyle = '#c29b38';
     ctx.font = 'bold 16px Courier New';
     ctx.textAlign = 'center';
     ctx.fillText('CALIFORNIA BUREAU OF INVESTIGATION', 250, 40);
 
-    // Divider
+    // Draw Divider Line
     ctx.beginPath();
     ctx.moveTo(30, 50);
     ctx.lineTo(470, 50);
     ctx.strokeStyle = '#c29b38';
     ctx.stroke();
 
-    // Badge Star Symbol
+    // Draw Badge Icon
     ctx.font = '60px serif';
     ctx.fillText('⭐', 80, 150);
 
-    // Badge Text
+    // Draw User Data
     ctx.textAlign = 'left';
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 20px Courier New';
@@ -594,13 +712,13 @@ if (downloadBadgeBtn) {
     ctx.font = 'bold 13px Courier New';
     ctx.fillText(serial, 150, 190);
 
-    // Footer Signature
+    // Draw Signature
     ctx.textAlign = 'right';
     ctx.fillStyle = '#aaaaaa';
     ctx.font = 'italic 12px Courier New';
     ctx.fillText('Authorized by: Director Srijit Banerjee', 460, 245);
 
-    // Download PNG
+    // Trigger Download
     const link = document.createElement('a');
     link.download = `CBI_Badge_${name.replace(/\s+/g, '_')}.png`;
     link.href = canvas.toDataURL('image/png');
@@ -609,11 +727,12 @@ if (downloadBadgeBtn) {
 }
 
 
-// --- 12. CUSTOM CONTEXT MENU ---
+// Right-Click Context Menu Logic
 const contextMenu = document.getElementById('context-menu');
 
 document.addEventListener('contextmenu', (e) => {
   e.preventDefault();
+  
   if (contextMenu) {
     contextMenu.style.left = `${e.clientX}px`;
     contextMenu.style.top = `${e.clientY}px`;
@@ -627,24 +746,54 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// Context Menu Action Listeners
 document.getElementById('cm-inspect').addEventListener('click', () => {
   updateObservation("Patrick Jane is inspecting the desk surface for fingerprints...");
   contextMenu.classList.add('hidden');
 });
 
-document.getElementById('cm-team').addEventListener('click', () => { document.getElementById('launch-team').click(); contextMenu.classList.add('hidden'); });
-document.getElementById('cm-badge').addEventListener('click', () => { badgeModal.classList.remove('hidden'); contextMenu.classList.add('hidden'); });
-document.getElementById('cm-tea').addEventListener('click', () => { document.getElementById('launch-tea').click(); contextMenu.classList.add('hidden'); });
-document.getElementById('cm-devlogs').addEventListener('click', () => { document.getElementById('launch-devlog').click(); contextMenu.classList.add('hidden'); });
-document.getElementById('cm-pinboard').addEventListener('click', () => { document.getElementById('launch-pinboard').click(); contextMenu.classList.add('hidden'); });
-document.getElementById('cm-notepad').addEventListener('click', () => { document.getElementById('launch-notepad').click(); contextMenu.classList.add('hidden'); });
-document.getElementById('cm-darkmode').addEventListener('click', () => { triggerRedJohnEffect(); contextMenu.classList.add('hidden'); });
+document.getElementById('cm-team').addEventListener('click', () => {
+  document.getElementById('launch-team').click();
+  contextMenu.classList.add('hidden');
+});
+
+document.getElementById('cm-badge').addEventListener('click', () => {
+  badgeModal.classList.remove('hidden');
+  contextMenu.classList.add('hidden');
+});
+
+document.getElementById('cm-tea').addEventListener('click', () => {
+  document.getElementById('launch-tea').click();
+  contextMenu.classList.add('hidden');
+});
+
+document.getElementById('cm-devlogs').addEventListener('click', () => {
+  document.getElementById('launch-devlog').click();
+  contextMenu.classList.add('hidden');
+});
+
+document.getElementById('cm-pinboard').addEventListener('click', () => {
+  document.getElementById('launch-pinboard').click();
+  contextMenu.classList.add('hidden');
+});
+
+document.getElementById('cm-notepad').addEventListener('click', () => {
+  document.getElementById('launch-notepad').click();
+  contextMenu.classList.add('hidden');
+});
+
+document.getElementById('cm-darkmode').addEventListener('click', () => {
+  triggerRedJohnEffect();
+  contextMenu.classList.add('hidden');
+});
 
 
-// --- 13. RED JOHN HORROR EASTER EGG (RIGHT EASTER EGG) ---
+// Red John Easter Egg Animation & Audio
 function triggerRedJohnEffect() {
   const overlay = document.getElementById('rj-overlay');
   const dripsContainer = document.getElementById('blood-drips-container');
+  
+  // Clear any existing drips
   dripsContainer.innerHTML = '';
 
   for (let i = 0; i < 25; i++) {
@@ -656,27 +805,39 @@ function triggerRedJohnEffect() {
     dripsContainer.appendChild(drop);
   }
 
+  // Attempt to play Web Audio synth
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(110, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 1.8);
+    
     gain.gain.setValueAtTime(0.4, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.8);
+    
     osc.connect(gain);
     gain.connect(ctx.destination);
+    
     osc.start();
     osc.stop(ctx.currentTime + 1.8);
-  } catch (e) {}
+  } catch (e) {
+    console.log('Audio Context restricted by browser');
+  }
 
+  // Toggle visual state
   overlay.classList.remove('hidden');
   document.body.classList.toggle('dark-mode');
 
+  // Remove overlay after animation completes
   setTimeout(() => {
     overlay.classList.add('hidden');
   }, 2200);
 }
 
-document.getElementById('red-john-egg').addEventListener('click', triggerRedJohnEffect);
+const redJohnTrigger = document.getElementById('red-john-egg');
+if (redJohnTrigger) {
+  redJohnTrigger.addEventListener('click', triggerRedJohnEffect);
+}
