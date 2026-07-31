@@ -11,6 +11,7 @@ Instead of glass and neon, I used manila folders, corkboards, and typewriter fon
 * **CBI Theme:** Custom CSS to mimic physical case files, complete with red "CONFIDENTIAL" stamps and a wood-grain desk background.
 * **Interactive Devlogs:** A built-in app that lets you read through my development process for this mission.
 * **Live Clock:** Simple taskbar clock to keep track of time while investigating.
+* **Persistent Notes:** A notepad that lets you jot down case details.
 
 ## How to test it
 It's just plain HTML, CSS, and JS. No frameworks, no npm installs. 
