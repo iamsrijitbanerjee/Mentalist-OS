@@ -1,32 +1,20 @@
-# The Mentalist OS: CBI Casefile Edition
+# Mentalist OS (CBI Edition) 🔍
 
-I am very excited to share my web operating system project with you. Most of the time when you open a browser it looks very modern and sleek with colors.. I wanted to create something that feels warm and personal. The Mentalist is one of my television shows. So I designed this operating system to look like a desk at the Sacramento CBI detective station.
-Everything in this system is designed to look like case files and notes. Of regular windows I made everything look like manila folders and corkboards where you can pin up notes and pictures.
+This is my submission for the Stardance WebOS mission. 
 
----
+Most Web OS projects I've seen go for that sleek, dark-mode glass aesthetic (like a Mac or Windows 11). I wanted to do something different that actually fits my personality. I'm a huge fan of the show *The Mentalist*, so I built this OS to look like a physical detective's desk at the CBI (California Bureau of Investigation).
 
-## What is Inside The Mentalist OS
+Instead of glass and neon, I used manila folders, corkboards, and typewriter fonts. 
 
-* I made a window system that uses simple JavaScript and lets you drag things around and stack them on top of each other.
-* There is a tea timer that helps you focus it is called Patricks Tea Lounge. You can choose from types of tea like Earl Grey or Green Tea. When your tea is ready you will hear a sound.
-* The CBI Investigators Log is like a diary where you can write down what you are working on and track your progress.
-* The Evidence Pinboard is like a corkboard where you can pin up pictures and notes and even connect them with strings.
-* The Encrypted Field Notes is a notepad where you can write down your thoughts and it will save them right in your browser.
-* The Patrick Jane Deduction Engine is like a voice that gives you hints and observations as you use the system.
-* If you look closely you can find a secret Easter egg that will change the whole system to a dark mode, with spooky sounds.
+## Features
+* **Draggable Windows:** Built from scratch using vanilla JavaScript. You can drag the case files around and clicking one brings it to the front.
+* **CBI Theme:** Custom CSS to mimic physical case files, complete with red "CONFIDENTIAL" stamps and a wood-grain desk background.
+* **Interactive Devlogs:** A built-in app that lets you read through my development process for this mission.
+* **Live Clock:** Simple taskbar clock to keep track of time while investigating.
 
----
+## How to test it
+It's just plain HTML, CSS, and JS. No frameworks, no npm installs. 
+Just download the files and open `index.html` in your browser. 
 
-## How I Built The Mentalist OS
-
-* I used HTML5 and CSS3 to make the system look like paper and to make the layout flexible.
-* I used JavaScript to make the system work fast and responsive.
-* I used the Web Audio API to make the sounds you hear in the system.
-
----
-
-## How to Try Out The Mentalist OS
-
-1. Clone or download this repository.
-2. Open `index.html` in your browser
-3. You do not need to install anything or setup local server. Just open the file and explore!
+## Challenges
+Getting the z-index stacking to work properly was definitely the hardest part. I had to figure out how to track the highest z-index value globally so that whichever window you click always jumps in front of the others.
