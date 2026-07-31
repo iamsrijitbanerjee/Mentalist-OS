@@ -72,3 +72,47 @@ body {
   height: 150px;
   resize: none;
 }
+
+/* Window styles - giving it a basic beige folder look */
+.window {
+  background-color: #fdf5e6; /* light beige */
+  border: 1px solid #cdaa7d; /* darker outline */
+  width: 400px;
+  position: absolute;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+}
+
+.window-top {
+  background-color: #f5deb3; /* slightly darker beige for the top bar */
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #cdaa7d;
+  cursor: grab; /* shows the user they can drag it */
+}
+
+.window-top:active {
+  cursor: grabbing;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.window-content {
+  padding: 15px;
+  min-height: 200px;
+}
+
+/* Notes app specific */
+#notes-input {
+  width: 100%;
+  height: 150px;
+  resize: none;
+  background-color: #fffaf0; /* slightly off-white for text area */
+  border: 1px solid #ccc;
+  padding: 5px;
+}
