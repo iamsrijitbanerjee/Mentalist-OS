@@ -1,4 +1,4 @@
-# Mentalist OS (CBI Edition) 🔍
+# Mentalist OS (CBI Edition)
 
 This is my submission for the Stardance WebOS mission. 
 
