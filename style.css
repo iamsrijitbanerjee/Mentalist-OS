@@ -279,3 +279,97 @@ body.dark-mode #field-notes { color: #f0e6e6; }
 body.dark-mode #context-menu { background-color: #1a1818; border-color: #3d1414; }
 body.dark-mode #context-menu li { color: #f0e6e6; }
 body.dark-mode #context-menu li:hover { background-color: #8f1d1d; }
+
+/* --- TASKBAR STYLES --- */
+#taskbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: rgba(26, 18, 12, 0.95);
+  border-top: 1px solid var(--header-gold);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  z-index: 99998;
+}
+
+#taskbar-apps {
+  display: flex;
+  gap: 8px;
+}
+
+.taskbar-btn {
+  background: #362417;
+  color: var(--manila-paper);
+  border: 1px solid var(--header-gold);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.taskbar-btn:hover {
+  background: var(--header-gold);
+  color: #1a120c;
+}
+
+/* --- ADJUST DESKTOP FOR TASKBAR --- */
+#desktop {
+  /* 38px System Bar + 22px Banner + 40px Taskbar = 100px Offset */
+  height: calc(100vh - 100px); 
+}
+
+/* --- WINDOW RESIZE & SNAP STYLES --- */
+.window {
+  /* Base transitions disabled during drag, added via JS for snap */
+  transition: transform 0.1s ease;
+}
+
+.window.snapped {
+  border-radius: 0;
+}
+
+.window-body {
+  overflow: auto; /* Ensures content scrolls if window is resized smaller */
+}
+
+/* Interactive Resize Handles */
+.resizer {
+  position: absolute;
+}
+.resizer-r {
+  right: -3px;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  cursor: e-resize;
+  z-index: 10;
+}
+.resizer-b {
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  cursor: s-resize;
+  z-index: 10;
+}
+.resizer-br {
+  right: -3px;
+  bottom: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+  z-index: 11;
+}
+
+/* Push easter eggs up to account for taskbar */
+#cbi-badge-egg { bottom: 52px; }
+#red-john-egg { bottom: 52px; }

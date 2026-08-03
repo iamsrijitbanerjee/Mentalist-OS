@@ -13,12 +13,69 @@ setInterval(updateClock, 1000);
 updateClock();
 
 
-// --- 2. DRAGGABLE WINDOW ENGINE ---
+// --- 2. ADVANCED WINDOW ENGINE (SNAP, MINIMIZE, RESIZE) ---
+const taskbarApps = document.getElementById('taskbar-apps');
+
+function createTaskbarIcon(winId, title) {
+  if (document.getElementById(`tb-${winId}`)) return; // Prevent duplicates
+  const btn = document.createElement('button');
+  btn.id = `tb-${winId}`;
+  btn.className = 'taskbar-btn';
+  btn.innerHTML = `📁 ${title}`;
+  btn.onclick = () => {
+    const win = document.getElementById(winId);
+    win.style.display = 'flex';
+    highestZIndex++;
+    win.style.zIndex = highestZIndex;
+    btn.remove();
+  };
+  taskbarApps.appendChild(btn);
+}
+
+function makeResizable(windowEl) {
+  const resizers = ['r', 'b', 'br']; // Right, Bottom, Bottom-Right
+  resizers.forEach(dir => {
+    const resizer = document.createElement('div');
+    resizer.className = `resizer resizer-${dir}`;
+    windowEl.appendChild(resizer);
+
+    resizer.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      let isResizing = true;
+      let startX = e.clientX;
+      let startY = e.clientY;
+      let startW = parseInt(document.defaultView.getComputedStyle(windowEl).width, 10);
+      let startH = parseInt(document.defaultView.getComputedStyle(windowEl).height, 10);
+      
+      windowEl.style.transition = 'none';
+      if (windowEl.dataset.snapped) windowEl.dataset.snapped = "";
+
+      function doResize(e) {
+        if (!isResizing) return;
+        if (dir.includes('r')) windowEl.style.width = startW + (e.clientX - startX) + 'px';
+        if (dir.includes('b')) windowEl.style.height = startH + (e.clientY - startY) + 'px';
+      }
+
+      function stopResize() {
+        isResizing = false;
+        document.removeEventListener('mousemove', doResize);
+        document.removeEventListener('mouseup', stopResize);
+      }
+
+      document.addEventListener('mousemove', doResize);
+      document.addEventListener('mouseup', stopResize);
+    });
+  });
+}
+
 function makeDraggable(windowEl) {
   const header = windowEl.querySelector('.window-header');
+  const title = windowEl.querySelector('.window-title').textContent;
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;
+  let preSnapState = null;
 
   windowEl.addEventListener('mousedown', () => {
     highestZIndex++;
@@ -27,9 +84,20 @@ function makeDraggable(windowEl) {
 
   if (header) {
     header.addEventListener('mousedown', (e) => {
+      if (e.target.classList.contains('win-btn')) return; // Ignore buttons
       isDragging = true;
       offsetX = e.clientX - windowEl.offsetLeft;
       offsetY = e.clientY - windowEl.offsetTop;
+      windowEl.style.transition = 'none';
+
+      // Unsnap if dragging away from a snapped state
+      if (windowEl.dataset.snapped) {
+        windowEl.dataset.snapped = "";
+        windowEl.style.width = preSnapState.width;
+        windowEl.style.height = preSnapState.height;
+        windowEl.classList.remove('snapped');
+        offsetX = windowEl.offsetWidth / 2; // Center mouse on header
+      }
     });
   }
 
@@ -39,16 +107,56 @@ function makeDraggable(windowEl) {
     windowEl.style.top = `${e.clientY - offsetY}px`;
   });
 
-  document.addEventListener('mouseup', () => { isDragging = false; });
+  document.addEventListener('mouseup', (e) => {
+    if (!isDragging) return;
+    isDragging = false;
 
+    // Split-Screen Edge Snapping Logic
+    const screenW = window.innerWidth;
+    if (e.clientX < 20) { // Snap Left
+      preSnapState = { width: windowEl.style.width || windowEl.offsetWidth + 'px', height: windowEl.style.height || windowEl.offsetHeight + 'px' };
+      windowEl.style.transition = 'all 0.2s ease';
+      windowEl.style.left = '0px';
+      windowEl.style.top = '0px';
+      windowEl.style.width = '50%';
+      windowEl.style.height = '100%';
+      windowEl.dataset.snapped = "true";
+      windowEl.classList.add('snapped');
+    } else if (e.clientX > screenW - 20) { // Snap Right
+      preSnapState = { width: windowEl.style.width || windowEl.offsetWidth + 'px', height: windowEl.style.height || windowEl.offsetHeight + 'px' };
+      windowEl.style.transition = 'all 0.2s ease';
+      windowEl.style.left = '50%';
+      windowEl.style.top = '0px';
+      windowEl.style.width = '50%';
+      windowEl.style.height = '100%';
+      windowEl.dataset.snapped = "true";
+      windowEl.classList.add('snapped');
+    }
+  });
+
+  // Minimize Window Button
+  const minBtn = windowEl.querySelector('.win-btn.minimize');
+  if (minBtn) {
+    minBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      windowEl.style.display = 'none';
+      createTaskbarIcon(windowEl.id, title);
+    });
+  }
+
+  // Close Window Button
   const closeBtn = windowEl.querySelector('.win-btn.close');
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
       windowEl.style.display = 'none';
     });
   }
+
+  // Inject Custom Resizers
+  makeResizable(windowEl);
 }
 
+// Initialize on all existing windows
 document.querySelectorAll('.window').forEach(makeDraggable);
 
 
@@ -61,6 +169,9 @@ function setupLauncher(btnId, winId) {
       win.style.display = 'flex';
       highestZIndex++;
       win.style.zIndex = highestZIndex;
+      // Remove from taskbar if it was minimized
+      const tbIcon = document.getElementById(`tb-${winId}`);
+      if (tbIcon) tbIcon.remove();
     });
   }
 }
@@ -114,6 +225,11 @@ let defaultDevlogs = [
     title: "CASE ENTRY #003: CBI Customization",
     date: "Phase 3 - Detective UI Customization",
     content: "Customized theme based on The Mentalist detective desk aesthetic.\n\nBuilt Patrick's Tea Lounge, Evidence Pinboard, and Encrypted Field Notes."
+  },
+  {
+    title: "CASE ENTRY #004: Advanced OS States",
+    date: "Phase 4 - WebOS 2 Upgrade",
+    content: "Introduced native OS mechanics including 50% split-screen snapping, minimizing to taskbar, and border resizing.\n\nExpanded the database to 50+ characters and built a digital CBI badge canvas exporter."
   }
 ];
 
@@ -165,7 +281,7 @@ document.getElementById('add-case-entry-btn').addEventListener('click', () => {
 
   const newLog = {
     title: title,
-    date: "Phase 4 - " + new Date().toLocaleDateString(),
+    date: "New Log - " + new Date().toLocaleDateString(),
     content: content
   };
 
@@ -287,7 +403,7 @@ if (saveArchiveBtn) {
   saveArchiveBtn.addEventListener('click', () => {
     const text = notepadArea.value.trim();
     if (!text) { alert("Cannot save an empty note!"); return; }
-    const title = prompt("Enter Note Title:", "Field Note #" + (archiveSelect.options.length));
+    const title = prompt("Enter Note Title:", "Field Note #" + (archiveSelect.options.length + 1));
     if (!title) return;
 
     const archives = JSON.parse(localStorage.getItem('stardance_notes_archive') || '[]');
@@ -641,7 +757,7 @@ document.getElementById('cm-notepad').addEventListener('click', () => { document
 document.getElementById('cm-darkmode').addEventListener('click', () => { triggerRedJohnEffect(); contextMenu.classList.add('hidden'); });
 
 
-// --- 13. RED JOHN HORROR EASTER EGG (RIGHT EASTER EGG) ---
+// --- 13. RED JOHN HORROR EASTER EGG ---
 function triggerRedJohnEffect() {
   const overlay = document.getElementById('rj-overlay');
   const dripsContainer = document.getElementById('blood-drips-container');

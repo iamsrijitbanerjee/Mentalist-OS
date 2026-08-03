@@ -51,10 +51,10 @@
           <span class="window-title">CBI Major Crimes Unit — Official Roster</span>
         </div>
         <div class="window-controls">
+          <button class="win-btn minimize" title="Minimize">_</button>
           <button class="win-btn close" aria-label="Close">✕</button>
         </div>
       </div>
-
       <div class="window-body team-board-body">
         <div class="team-grid">
           
@@ -126,18 +126,16 @@
         <div class="window-controls">
           <button class="win-btn" id="edit-case-entry-btn" title="Edit Active Entry">✏️ Edit</button>
           <button class="win-btn" id="add-case-entry-btn" title="Add New Entry">➕ New</button>
+          <button class="win-btn minimize" title="Minimize">_</button>
           <button class="win-btn close" aria-label="Close">✕</button>
         </div>
       </div>
-
       <div class="window-body devlog-container">
         <div class="devlog-sidebar">
           <div class="sidebar-title">📁 Case Logs</div>
-          <ul id="devlog-list">
-            </ul>
+          <ul id="devlog-list"></ul>
         </div>
-        <div class="devlog-content" id="devlog-body">
-          </div>
+        <div class="devlog-content" id="devlog-body"></div>
       </div>
     </div>
 
@@ -148,22 +146,19 @@
           <span class="window-title">Patrick's Tea Lounge</span>
         </div>
         <div class="window-controls">
+          <button class="win-btn minimize" title="Minimize">_</button>
           <button class="win-btn close" aria-label="Close">✕</button>
         </div>
       </div>
-      
       <div class="window-body tea-body">
         <div class="tea-icon">☕</div>
         <p class="tea-quote">"A good cup of tea solves 90% of all mysteries."</p>
-
         <div class="tea-presets">
           <button class="tea-chip active" data-time="180">Earl Grey (3m)</button>
           <button class="tea-chip" data-time="240">Green Tea (4m)</button>
           <button class="tea-chip" data-time="300">Chamomile (5m)</button>
         </div>
-
         <div class="timer-display" id="tea-timer">03:00</div>
-
         <div class="tea-controls">
           <button id="tea-start-btn" class="tea-btn primary">Start Steeping</button>
           <button id="tea-reset-btn" class="tea-btn">Reset</button>
@@ -178,10 +173,10 @@
           <span class="window-title">CBI Suspect Pinboard</span>
         </div>
         <div class="window-controls">
+          <button class="win-btn minimize" title="Minimize">_</button>
           <button class="win-btn close" aria-label="Close">✕</button>
         </div>
       </div>
-
       <div class="window-body corkboard-body">
         <div class="pinboard-grid">
           <div class="polaroid-card">
@@ -217,10 +212,10 @@
           <span class="window-title">Encrypted Field Notes</span>
         </div>
         <div class="window-controls">
+          <button class="win-btn minimize" title="Minimize">_</button>
           <button class="win-btn close" aria-label="Close">✕</button>
         </div>
       </div>
-
       <div class="window-body notepad-body">
         <div class="notepad-toolbar">
           <button id="save-note-archive-btn" class="notes-btn">💾 Save Archive</button>
@@ -240,6 +235,7 @@
           <span class="window-title">CBI Office Soundscapes</span>
         </div>
         <div class="window-controls">
+          <button class="win-btn minimize" title="Minimize">_</button>
           <button class="win-btn close" aria-label="Close">✕</button>
         </div>
       </div>
@@ -276,6 +272,10 @@
     </div>
 
   </main>
+
+  <div id="taskbar">
+    <div id="taskbar-apps"></div>
+  </div>
 
   <div id="cbi-credential-modal" class="hidden">
     <div class="modal-card">
