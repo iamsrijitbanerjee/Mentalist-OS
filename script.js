@@ -200,20 +200,30 @@ setupLauncher('launch-notepad', 'notepad-app');
 setupLauncher('launch-ambient', 'ambient-app');
 
 
-// --- 4. TERMINAL ENGINE ---
+// --- 4. TERMINAL ENGINE & BLAKE ASSOCIATION APP ---
 const terminalInput = document.getElementById('terminal-input');
 const terminalOutput = document.getElementById('terminal-output');
+const blakeEggBtn = document.getElementById('blake-egg');
 
 function printToTerminal(text) {
   terminalOutput.innerHTML += `<div>${text}</div>`;
   terminalOutput.scrollTop = terminalOutput.scrollHeight;
 }
 
+if (blakeEggBtn) {
+  blakeEggBtn.addEventListener('click', () => {
+    const blakeWin = document.getElementById('blake-app');
+    blakeWin.style.display = 'flex';
+    highestZIndex++;
+    blakeWin.style.zIndex = highestZIndex;
+  });
+}
+
 if (terminalInput) {
   terminalInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const val = terminalInput.value.trim();
-      printToTerminal(`<span style="color:#888">CBI:\\></span> ${val}`);
+      printToTerminal(`<span style="color:#888">FBI:\\></span> ${val}`);
       terminalInput.value = '';
 
       const args = val.toLowerCase().split(' ');
@@ -221,7 +231,7 @@ if (terminalInput) {
 
       switch(cmd) {
         case 'help':
-          printToTerminal('Commands: <strong>help</strong>, <strong>analyze [name]</strong>, <strong>tea</strong>, <strong>badge</strong>, <strong>theme [dark/light/wood]</strong>, <strong>clear</strong>');
+          printToTerminal('Commands: <strong>help</strong>, <strong>analyze [name]</strong>, <strong>tea</strong>, <strong>badge</strong>, <strong>tyger</strong>, <strong>theme [dark/light/wood]</strong>, <strong>clear</strong>');
           break;
         case 'analyze':
           if(args.length > 1) {
@@ -237,6 +247,10 @@ if (terminalInput) {
         case 'badge':
           document.getElementById('cbi-badge-egg').click();
           printToTerminal('FBI Identity system launched.');
+          break;
+        case 'tyger':
+          blakeEggBtn.click();
+          printToTerminal('WARNING: Encrypted Blake Association drive accessed.');
           break;
         case 'theme':
           if(args[1] === 'dark') { 
@@ -723,7 +737,7 @@ if (saveArchiveBtn) {
     
     localStorage.setItem('stardance_notes_archive', JSON.stringify(archives));
     loadArchiveDropdown(); 
-    alert("Note saved into CBI Archive!");
+    alert("Note saved into Archive!");
   });
 }
 
@@ -817,13 +831,14 @@ setInterval(() => {
 
 // --- 12. AGENCY BADGE ISSUANCE & CANVAS DOWNLOAD ---
 const badgeModal = document.getElementById('cbi-credential-modal');
-const cbiBadgeEgg = document.getElementById('cbi-badge-egg');
+
 const closeBadgeBtn = document.getElementById('close-badge-modal');
 const generateBadgeBtn = document.getElementById('generate-badge-btn');
 const downloadBadgeBtn = document.getElementById('download-badge-btn');
 const badgeFormPane = document.getElementById('badge-form-pane');
 const badgeCardResult = document.getElementById('badge-card-result');
 
+const cbiBadgeEgg = document.getElementById('cbi-badge-egg');
 if (cbiBadgeEgg) {
   cbiBadgeEgg.addEventListener('click', () => { 
     badgeModal.classList.remove('hidden'); 
@@ -861,16 +876,19 @@ if (downloadBadgeBtn) {
     canvas.height = 280;
     const ctx = canvas.getContext('2d');
 
+    // 1. Draw Background
     const grad = ctx.createLinearGradient(0, 0, 500, 280);
     grad.addColorStop(0, '#2b1c11'); 
     grad.addColorStop(1, '#120b07');
     ctx.fillStyle = grad; 
     ctx.fillRect(0, 0, 500, 280);
 
+    // 2. Draw Borders
     ctx.strokeStyle = '#c29b38'; 
     ctx.lineWidth = 4; 
     ctx.strokeRect(10, 10, 480, 260);
     
+    // 3. Draw Header
     ctx.fillStyle = '#c29b38'; 
     ctx.font = 'bold 16px Courier New'; 
     ctx.textAlign = 'center';
@@ -882,9 +900,18 @@ if (downloadBadgeBtn) {
     ctx.strokeStyle = '#c29b38'; 
     ctx.stroke();
     
-    ctx.font = '60px serif'; 
-    ctx.fillText('⭐', 80, 150);
+    // 4. Draw the Badge Seal (Using Real Image if loaded, otherwise fallback)
+    const badgeSource = document.getElementById('cbi-badge-source');
+    if (badgeSource && badgeSource.complete && badgeSource.naturalHeight !== 0) {
+      // Draw image (x, y, width, height)
+      ctx.drawImage(badgeSource, 60, 110, 70, 70);
+    } else {
+      // Fallback to emoji if image is broken/missing
+      ctx.font = '60px serif'; 
+      ctx.fillText('⭐', 80, 150);
+    }
 
+    // 5. Draw Text details
     ctx.textAlign = 'left'; 
     ctx.fillStyle = '#ffffff'; 
     ctx.font = 'bold 20px Courier New'; 
@@ -899,11 +926,13 @@ if (downloadBadgeBtn) {
     ctx.font = 'bold 13px Courier New'; 
     ctx.fillText(serial, 150, 190);
 
+    // 6. Draw Signature
     ctx.textAlign = 'right'; 
     ctx.fillStyle = '#aaaaaa'; 
     ctx.font = 'italic 12px Courier New'; 
     ctx.fillText('Authorized by: FBI Director Srijit Banerjee', 460, 245);
 
+    // 7. Trigger Download
     const link = document.createElement('a');
     link.download = `FBI_Badge_${name.replace(/\s+/g, '_')}.png`;
     link.href = canvas.toDataURL('image/png'); 
