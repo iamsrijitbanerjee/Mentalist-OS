@@ -1,18 +1,13 @@
 git add .
-git commit -m "Database expansion, global search upgraded, expanded the Devlog toolt"
+git commit -m "easter eggs added, 80+ people search list, FBI badge generator made real, red pins overlat issue fixed in evidence board"
 git push origin main
 
-Phase 2: The search bar on website is really good now. It can find over 80 people like characters, suspects and agents from The Mentalist. You can use it like you use the search on your computer. If you want to find someone like Virgil Minelli or Lorelei Martins you can just type their name. It will show you what they are doing and what group they are part of, with clearance level.
-I also made the Devlog tool better. Now you can write a lot of information about what you're working on. You can use the editor to write many paragraphs about your investigation or what you are developing.
+I changed my focus to work on easter eggs, adding more details to the story and fixing the user interface problems. I made the main database bigger to include over 80 characters from all the seasons of The Mentalist. I also improved the Evidence Pinboard to show eight suspects, including the list of people who could be Red John. The technical problem I had during this time was getting the HTML5 Canvas layers to work right for the red strings. At first the canvas was getting in the way. People could not click on the red pins underneath it. To fix this I had to set up the z-index stacking right and use a special code on the canvas layer to ignore the mouse clicks while also making sure the pins themselves would work with mouse clicks. I also fixed the problem of pictures being cut off on the roster by using some properties in the CSS code. To finish everything up I added a drive, for the Blake Association that people can access from the Terminal and I made the digital FBI Badge generator work perfectly so it can make real PNG pictures.
 
-
-git add .
-git commit -m "expanded audio synthesizer, built a CBI Badge creator, evidence board upgraded"
-git push origin main
-
-Phase 3: Audio synthesizer now has four tracks (Choices: Sacramento Rain, Late Night Office Hum, Lo-Fi Vinyl Crackle, and Teletype).
-I also updated the CBI Badge Creator, it uses HTML5 Canvas. People can type in their name. What they do. Then they can get a special consultant badge.
-The old Evidence Pinboard was not very exciting. Now, the user can drag strings between the red pins on the suspect cards. This makes it look like the suspects are all connected and people can see how they are related to each other. The CBI ID credential and the Evidence Pinboard are great tools that make the experience feel more real.
+I am very excited to the MENTALIST OS. Hope you like and support this project, took a lot of resources and time. Most of the time when you open a browser it looks very modern and sleek with colors.. I wanted to create something that feels warm and personal. The Mentalist is one of my TV shows. So I designed this OS to look like a desk at the CBI detective station.
+Everything in this system is designed to look like case files and notes. Of regular windows I made everything look like manila folders and corkboards where you can pin up notes and pictures.
+This new version of Mentalist OS has a lot of changes to the core window widgets. It has things like taskbar docking and active resizing. You can also split the screen into two parts with a 50% edge snap.
+Making the Mentalist OS work, with web pages and run things like the interactive red string evidence board and audio tools at the same time was really hard.. I did it and now the it is a really cool and simple way to have a desktop experience. It feels like you are part of an investigation team. You can go into the terminal. Look around. The Mentalist OS is a way to feel like you are solving a mystery. Try to catch Red John.
 
 
 This is what the reviewer says:- Rework the CSS and JS, right now it looks like every other AI-made site. Give it your own style.

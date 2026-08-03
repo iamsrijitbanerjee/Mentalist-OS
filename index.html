@@ -9,10 +9,13 @@
 </head>
 <body>
 
+  <img id="cbi-badge-source" src="cbi-badge.png" style="display: none;" crossorigin="anonymous" />
+
   <header id="system-bar">
     <div class="bar-left">
       <div class="cbi-badge-container">
-        <span class="cbi-star">⭐</span>
+        <img src="cbi-badge.png" class="cbi-star-img" alt="Badge" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+        <span class="fallback-star" style="display:none; color: #c29b38;">⭐</span>
         <span class="cbi-badge-text">CBI TASKFORCE SACRAMENTO</span>
       </div>
       <span class="bar-title">Mentalist OS</span>
@@ -60,7 +63,7 @@
       <div class="window-body team-board-body">
         <div class="team-grid">
           
-          <div class="team-card">
+        <div class="team-card">
             <div class="member-img-frame">
               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDMhd5sfdQG3vl6FAkL0gFLXbRU1uHDMmsjj0Z4t-5XA&s=10" alt="Patrick Jane" class="roster-img" />
             </div>
@@ -107,7 +110,7 @@
           
           <div class="team-card director-card">
             <div class="member-img-frame">
-              <img id="director-photo" src="director.png" onerror="this.src='https://via.placeholder.com/150/dcc89b/1a120c?text=Director+Srijit'" alt="Director Srijit Banerjee" class="roster-img" />
+              <img src="director.png" onerror="this.src='https://via.placeholder.com/150/dcc89b/1a120c?text=Director+Srijit'" alt="Director Srijit Banerjee" class="roster-img" />
             </div>
             <div class="member-name">Srijit Banerjee</div>
             <div class="member-role">FBI Director</div>
@@ -122,7 +125,7 @@
       <div class="window-header" style="background: #111; border-bottom: 2px solid #c29b38;">
         <div class="folder-tab">
           <span class="stamp" style="color: #c29b38; border-color: #c29b38;">SYSTEM</span>
-          <span class="window-title" style="color: #e6d7b9;">CBI Mainframe CLI</span>
+          <span class="window-title" style="color: #e6d7b9;">Mainframe CLI</span>
         </div>
         <div class="window-controls">
           <button class="win-btn minimize" title="Minimize" style="color: #c29b38;">_</button>
@@ -131,11 +134,11 @@
       </div>
       <div class="window-body terminal-body">
         <div id="terminal-output">
-          Welcome to the CBI Secure Mainframe.<br>
+          Welcome to the Secure Mainframe.<br>
           Authorized Access Only. Type <strong>help</strong> for commands.<br><br>
         </div>
         <div class="terminal-input-line">
-          <span class="prompt">CBI:\></span>
+          <span class="prompt">FBI:\></span>
           <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
         </div>
       </div>
@@ -161,6 +164,35 @@
           <ul id="devlog-list"></ul>
         </div>
         <div class="devlog-content" id="devlog-body"></div>
+      </div>
+    </div>
+
+    <div class="window" id="blake-app" style="top: 180px; left: 450px; width: 400px; display: none;">
+      <div class="window-header" style="background: #1a0000; border-bottom: 2px solid #800000;">
+        <div class="folder-tab">
+          <span class="stamp" style="color: #ff3b3b; border-color: #ff3b3b;">ENCRYPTED</span>
+          <span class="window-title" style="color: #ff4d4d;">Flash_Drive_01.dat</span>
+        </div>
+        <div class="window-controls">
+          <button class="win-btn minimize" style="color: #ff4d4d;">_</button>
+          <button class="win-btn close" style="color: #ff4d4d;">✕</button>
+        </div>
+      </div>
+      <div class="window-body" style="background: #0a0000; color: #ff4d4d; font-family: 'Courier New', monospace;">
+        <p style="text-align: center; font-weight: bold; letter-spacing: 2px; font-size: 1.1rem;">THE BLAKE ASSOCIATION</p>
+        <p style="text-align: center; font-size: 0.75rem; margin-bottom: 12px; font-style: italic;">"Tyger Tyger, burning bright..."</p>
+        <hr style="border: 0; border-top: 1px dashed #400000; margin-bottom: 12px;" />
+        <ul style="list-style: none; font-size: 0.85rem; line-height: 1.9;">
+          <li>[DEC] Thomas McAllister</li>
+          <li>[DEC] Gale Bertram</li>
+          <li>[CUS] Reede Smith</li>
+          <li>[DEC] Oscar Cordero</li>
+          <li>[DEC] Craig O'Laughlin</li>
+          <li>[DEC] Partridge, Brett</li>
+          <li>[ACT] <span class="redacted-text">Hidden Suspect 1</span></li>
+          <li>[ACT] <span class="redacted-text">Unknown Agent 9</span></li>
+          <li>[ACT] <span class="redacted-text">Encrypted Entry</span></li>
+        </ul>
       </div>
     </div>
 
@@ -348,8 +380,14 @@
       </div>
     </div>
 
+    <div id="blake-egg" title="Encrypted USB Drive found in LaRoche's safe...">
+      <span class="blake-icon">💾</span>
+      <span class="badge-tag">ENCRYPTED</span>
+    </div>
+
     <div id="cbi-badge-egg" title="Click to apply for Special Consultant Badge...">
-      <span class="cbi-badge-icon">⭐</span>
+      <img src="cbi-badge.png" class="cbi-badge-icon-img" alt="Badge" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+      <span class="fallback-star" style="display:none; font-size: 1.2rem; color: #c29b38;">⭐</span>
       <span class="badge-tag">AGENCY ID</span>
     </div>
 
@@ -408,7 +446,10 @@
           <div class="official-cbi-badge-id" id="badge-to-download">
             <div class="badge-top-bar">FEDERAL BUREAU OF INVESTIGATION</div>
             <div class="badge-id-body">
-              <div class="badge-star-seal">⭐</div>
+              <div class="badge-star-seal-container">
+                <img src="cbi-badge.png" class="badge-star-seal-img" id="badge-seal-img" alt="Seal" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <div class="fallback-star" style="display:none; font-size: 3.2rem; color: #c29b38;">⭐</div>
+              </div>
               <div class="badge-details">
                 <h3 id="issued-name">Consultant Name</h3>
                 <p id="issued-role">Special Consultant</p>
